@@ -15,6 +15,24 @@ class GetProductController extends Controller
      */
     public function __invoke(Request $request)
     {
+        if($request){
+            $products = Product::select('*');
+
+                if($request->q){
+                    $products->where(function($query) use ($request){
+                        $query->where('name','like','%'.$request->q.'%')
+                            ->orWhere('description','like','%'.$request->q.'%');
+                    });
+                }
+
+                if($request->category){
+                    $products->orWhere(function($query) use ($request){
+                        $query->where('category','=',$request->category);
+                    });
+                }
+
+            return $products->paginate(config('paginate.default'));
+        }
         return Product::all();
     }
 }

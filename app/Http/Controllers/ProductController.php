@@ -14,8 +14,10 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::all();
-        return view('products.index', compact('products'));
+        $categories = Product::select('category')->distinct()->get();
+        return view('products.index',[
+            'categories' => $categories
+        ]);
     }
 
     /**
