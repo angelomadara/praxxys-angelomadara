@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth:sanctum'])->group(function () {
     Route::prefix('products')->name('products.')->group(function () {
         Route::get('/all',GetProductController::class)->name('all');
     });
