@@ -21,6 +21,12 @@
                     Products
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="/products/create">
+                    <span data-feather="home"></span>
+                    Create Product
+                </a>
+            </li>
         </ul>
       </div>
     </nav>
