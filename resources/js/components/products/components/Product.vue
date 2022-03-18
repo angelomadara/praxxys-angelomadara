@@ -6,7 +6,7 @@
         <div class="card-body">
             <h5 class="card-title">{{ shortenDescription(product.name,50) }}</h5>
             <p class="card-text">{{ shortenDescription(product.description,200)  }}</p>
-            <p><a :href="'/product/update/'+product.id">Edit</a></p>
+            <p><a :href="'/products/edit/'+product.id">Edit</a></p>
         </div>
         </div>
     </div>

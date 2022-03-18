@@ -95,7 +95,12 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        //
+        $categories = Category::select('name')->get();
+        $product = Product::find($product->id);
+        return view('products.update-product-form',[
+            'categories' => $categories,
+            'product' => $product
+        ]);
     }
 
     /**
@@ -107,7 +112,40 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        //
+        $request->validate([
+            'name' => 'required|max:255',
+            'description' => 'required|max:1024',
+            'category' => 'required|max:255',
+            'image' => 'nullable|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            '_datetime' => 'required',
+        ]);
+        /**
+         * if the front over file exists
+         */
+        $path = null;
+        if($request->file('image')){
+            $request->file('image')->getClientOriginalName();
+            $path = $request->file('image')->store('public/cover');
+            $path = explode('/',$path);
+            $path = 'storage/cover/'.end($path);
+        }
+
+        /**
+         * update the product
+         */
+        $_product = $product->where('id',$request->id)->update([
+            'name' => $request->name,
+            'description' => $request->description,
+            'category' => $request->category,
+            'image' => $path,
+            '_datetime' => date("Y-m-d H:i:s", strtotime($request->_datetime)),
+        ]);
+
+        return response([
+            'message' => 'Product updated successfully',
+            'product' => $_product,
+            'status' => 'success'
+        ],Response::HTTP_ACCEPTED);
     }
 
     /**

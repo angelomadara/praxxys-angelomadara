@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-            <h1 class="h2">Create Product</h1>
+            <h1 class="h2">Update Product</h1>
         </div>
 
         <form class="row">
@@ -49,7 +49,7 @@
                 </div>
 
                 <div class="mt-4">
-                    <button type="button" class="btn btn-primary" v-on:click="createProduct">Save New Product</button>
+                    <button type="button" class="btn btn-primary" v-on:click="updateProduct">Update Product</button>
                 </div>
             </div>
         </form>
@@ -59,19 +59,13 @@
 <script>
 import datetime from 'vuejs-datetimepicker'
 export default {
-    props: ['categories'],
+    props: ['categories','item'],
     components: {
         datetime
     },
     data(){
         return {
-            product: {
-                name: '',
-                description: '',
-                category: '',
-                image: '',
-                _datetime: '',
-            },
+            product: JSON.parse(this.item),
             step: 1,
             _categories: JSON.parse(this.categories)
         }
@@ -85,7 +79,7 @@ export default {
             }
             reader.readAsDataURL(file);
         },
-        createProduct(){
+        updateProduct(){
             let formData = new FormData();
             formData.append('name', this.product.name);
             formData.append('description', this.product.description);
@@ -93,30 +87,9 @@ export default {
             formData.append('image',  document.querySelector('input[type=file]').files[0]);
             formData.append('_datetime', this.product._datetime);
 
-            axios.post('/api/products/store', formData).then(response => {
+            axios.post(`/api/products/update/${this.product.id}`, formData).then(response => {
                 if(response.data.status == 'success'){
                     location.href = `/products`
-                    // Swal.mixin({
-                    //     toast: true,
-                    //     position: 'top-end',
-                    //     showConfirmButton: false,
-                    //     timer: 3000,
-                    //     timerProgressBar: true,
-                    //     didOpen: (toast) => {
-                    //         toast.addEventListener('mouseenter', Swal.stopTimer)
-                    //         toast.addEventListener('mouseleave', Swal.resumeTimer)
-                    //     }
-                    // }).fire({
-                    //     icon: 'success',
-                    //     title: 'Signed in successfully'
-                    // })
-                    // this.step = 1;
-                    // this.product = {
-                    //     name: '',
-                    //     description: '',
-                    //     category: '',
-                    //     image: ''
-                    // }
                 }
             }).catch(error => {
                 console.log(error);

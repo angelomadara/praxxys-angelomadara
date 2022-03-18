@@ -24,5 +24,6 @@ use Illuminate\Support\Facades\Route;
     Route::prefix('products')->name('products.')->group(function () {
         Route::get('/all',GetProductController::class)->name('all');
         Route::post('/store', [ProductController::class,'store'])->name('store');
+        Route::post('/update/{id}', [ProductController::class,'update'])->name('store');
     });
 // });
