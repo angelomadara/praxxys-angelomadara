@@ -16,7 +16,7 @@ class GetProductController extends Controller
     public function __invoke(Request $request)
     {
         if($request){
-            $products = Product::select('*');
+            $products = Product::select('*')->with('images');
 
                 if($request->q){
                     $products->where(function($query) use ($request){
@@ -33,6 +33,6 @@ class GetProductController extends Controller
 
             return $products->latest()->paginate(config('paginate.default'));
         }
-        return Product::latest()->all();
+        return Product::with('images')->latest()->all();
     }
 }

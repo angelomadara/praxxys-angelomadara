@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\ProductImage;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -47,27 +48,44 @@ class ProductController extends Controller
             'name' => 'required|max:255',
             'description' => 'required|max:1024',
             'category' => 'required|max:255',
-            'image' => 'nullable|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            // 'image' => 'nullable|mimes:jpeg,png,jpg,gif,svg|max:2048',
             '_datetime' => 'required',
         ]);
-        /**
-         * if the front over file exists
-         */
-        $path = null;
-        if($request->file('image')){
-            $request->file('image')->getClientOriginalName();
-            $path = $request->file('image')->store('public/cover');
-            $path = explode('/',$path);
-            $path = 'storage/cover/'.end($path);
-        }
 
         $product = Product::create([
             'name' => $request->name,
             'description' => $request->description,
             'category' => $request->category,
-            'image' => $path,
+            // 'image' => $img_names[0]['image'], // get the first image
             '_datetime' => date("Y-m-d H:i:s", strtotime($request->_datetime)),
         ]);
+
+        /**
+         * if the front over file exists
+         */
+        $path = null;
+        // loop through the request and check if the image is not null
+        // if it is not null then upload the image
+        // if it is null then do not upload the image
+        $img_names = [];
+        foreach($request->file('images') as $key => $value){
+            $value->getClientOriginalName();
+            $path = $value->store('public/cover');
+            $path = explode('/',$path);
+            $path = 'storage/cover/'.end($path);
+            $img_names[] = [
+                'product_id' => $product->id,
+                'image' => $path,
+                'created_at' => date("Y-m-d H:i:s"),
+                'updated_at' => date("Y-m-d H:i:s")
+            ];
+        }
+
+        Product::where('id',$product->id)->update([
+            'image' => $img_names[0]['image']
+        ]);
+
+        ProductImage::insert($img_names); // insert the new photos
 
         return response([
             'message' => 'Product created successfully',
@@ -116,20 +134,32 @@ class ProductController extends Controller
             'name' => 'required|max:255',
             'description' => 'required|max:1024',
             'category' => 'required|max:255',
-            'image' => 'nullable|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            // 'image' => 'nullable|mimes:jpeg,png,jpg,gif,svg|max:2048',
             '_datetime' => 'required',
         ]);
         /**
          * if the front over file exists
          */
         $path = null;
-        if($request->file('image')){
-            $request->file('image')->getClientOriginalName();
-            $path = $request->file('image')->store('public/cover');
+
+        // loop through the request and check if the image is not null
+        // if it is not null then upload the image
+        // if it is null then do not upload the image
+        $img_names = [];
+        foreach($request->file('images') as $key => $value){
+            $value->getClientOriginalName();
+            $path = $value->store('public/cover');
             $path = explode('/',$path);
             $path = 'storage/cover/'.end($path);
+            $img_names[] = [
+                'product_id' => $request->id,
+                'image' => $path,
+                'created_at' => date("Y-m-d H:i:s"),
+                'updated_at' => date("Y-m-d H:i:s")
+            ];
         }
-
+        ProductImage::where('product_id',$request->id)->delete(); // remove the old photos
+        ProductImage::insert($img_names); // insert the new photos
         /**
          * update the product
          */
@@ -137,7 +167,7 @@ class ProductController extends Controller
             'name' => $request->name,
             'description' => $request->description,
             'category' => $request->category,
-            'image' => $path,
+            'image' => $img_names[0]['image'], // select the first image and make it as the product image
             '_datetime' => date("Y-m-d H:i:s", strtotime($request->_datetime)),
         ]);
 

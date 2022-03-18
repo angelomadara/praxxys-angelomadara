@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/', [DashboardController::class,'index'])->name('home');
+    Route::get('/', [ProductController::class,'index'])->name('home');
 
     /**
      * Products

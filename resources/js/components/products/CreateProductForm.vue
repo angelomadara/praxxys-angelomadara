@@ -30,11 +30,11 @@
             <div class="col-4" v-show="step == 2">
                 <div class="form-group">
                     <label for="image">Image</label>
-                    <input type="file" class="form-control-file" id="image" v-on:change="onFileChange">
+                    <input type="file" class="form-control-file" id="image" v-on:change="onFileChange" multiple accept="image/x-png, image/png, image/jpg, image/jpeg">
                 </div>
                 <div class="form-group">
                     <label for="image">Image</label>
-                    <img :src="product.image" class="img-fluid" alt="">
+                    <img v-for="image in images" :key="image" :src="image" class="img-fluid mt-4" alt="">
                 </div>
 
                 <div class="m-4">
@@ -72,51 +72,41 @@ export default {
                 image: '',
                 _datetime: '',
             },
+            images: [],
             step: 1,
             _categories: JSON.parse(this.categories)
         }
     },
     methods: {
         onFileChange(e){
-            let file = e.target.files[0];
-            let reader = new FileReader();
-            reader.onload = (e) => {
-                this.product.image = e.target.result;
+            /**
+             * display multiple images
+             */
+            let files = e.target.files;
+
+            for(let i = 0; i < files.length; i++){
+                let reader = new FileReader();
+                reader.onload = (e) => {
+                    // this.images = e.target.result;
+                    this.images.push(e.target.result);
+                }
+                reader.readAsDataURL(files[i]);
             }
-            reader.readAsDataURL(file);
         },
         createProduct(){
             let formData = new FormData();
             formData.append('name', this.product.name);
             formData.append('description', this.product.description);
             formData.append('category', this.product.category);
-            formData.append('image',  document.querySelector('input[type=file]').files[0]);
+            let imgs = document.querySelector('input[type=file]').files.length
+            for(let i = 0; i < imgs; i++){
+                formData.append('images[]', document.querySelector('input[type=file]').files[i]);
+            }
             formData.append('_datetime', this.product._datetime);
 
             axios.post('/api/products/store', formData).then(response => {
                 if(response.data.status == 'success'){
                     location.href = `/products`
-                    // Swal.mixin({
-                    //     toast: true,
-                    //     position: 'top-end',
-                    //     showConfirmButton: false,
-                    //     timer: 3000,
-                    //     timerProgressBar: true,
-                    //     didOpen: (toast) => {
-                    //         toast.addEventListener('mouseenter', Swal.stopTimer)
-                    //         toast.addEventListener('mouseleave', Swal.resumeTimer)
-                    //     }
-                    // }).fire({
-                    //     icon: 'success',
-                    //     title: 'Signed in successfully'
-                    // })
-                    // this.step = 1;
-                    // this.product = {
-                    //     name: '',
-                    //     description: '',
-                    //     category: '',
-                    //     image: ''
-                    // }
                 }
             }).catch(error => {
                 console.log(error);
@@ -134,7 +124,7 @@ export default {
             }
         },
         validateSecondStep(){
-            if(this.product.image == ''){
+            if(this.images.length <= 0){
                 Swal.fire({
                     icon: 'warning',
                     title: 'Oops...',

@@ -5281,6 +5281,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({});
 
 /***/ }),
@@ -5484,6 +5485,7 @@ __webpack_require__.r(__webpack_exports__);
         image: '',
         _datetime: ''
       },
+      images: [],
       step: 1,
       _categories: JSON.parse(this.categories)
     };
@@ -5492,45 +5494,37 @@ __webpack_require__.r(__webpack_exports__);
     onFileChange: function onFileChange(e) {
       var _this = this;
 
-      var file = e.target.files[0];
-      var reader = new FileReader();
+      /**
+       * display multiple images
+       */
+      var files = e.target.files;
 
-      reader.onload = function (e) {
-        _this.product.image = e.target.result;
-      };
+      for (var i = 0; i < files.length; i++) {
+        var reader = new FileReader();
 
-      reader.readAsDataURL(file);
+        reader.onload = function (e) {
+          // this.images = e.target.result;
+          _this.images.push(e.target.result);
+        };
+
+        reader.readAsDataURL(files[i]);
+      }
     },
     createProduct: function createProduct() {
       var formData = new FormData();
       formData.append('name', this.product.name);
       formData.append('description', this.product.description);
       formData.append('category', this.product.category);
-      formData.append('image', document.querySelector('input[type=file]').files[0]);
+      var imgs = document.querySelector('input[type=file]').files.length;
+
+      for (var i = 0; i < imgs; i++) {
+        formData.append('images[]', document.querySelector('input[type=file]').files[i]);
+      }
+
       formData.append('_datetime', this.product._datetime);
       axios.post('/api/products/store', formData).then(function (response) {
         if (response.data.status == 'success') {
-          location.href = "/products"; // Swal.mixin({
-          //     toast: true,
-          //     position: 'top-end',
-          //     showConfirmButton: false,
-          //     timer: 3000,
-          //     timerProgressBar: true,
-          //     didOpen: (toast) => {
-          //         toast.addEventListener('mouseenter', Swal.stopTimer)
-          //         toast.addEventListener('mouseleave', Swal.resumeTimer)
-          //     }
-          // }).fire({
-          //     icon: 'success',
-          //     title: 'Signed in successfully'
-          // })
-          // this.step = 1;
-          // this.product = {
-          //     name: '',
-          //     description: '',
-          //     category: '',
-          //     image: ''
-          // }
+          location.href = "/products";
         }
       })["catch"](function (error) {
         console.log(error);
@@ -5548,7 +5542,7 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     validateSecondStep: function validateSecondStep() {
-      if (this.product.image == '') {
+      if (this.images.length <= 0) {
         Swal.fire({
           icon: 'warning',
           title: 'Oops...',
@@ -5725,6 +5719,7 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       product: JSON.parse(this.item),
+      images: [],
       step: 1,
       _categories: JSON.parse(this.categories)
     };
@@ -5733,21 +5728,33 @@ __webpack_require__.r(__webpack_exports__);
     onFileChange: function onFileChange(e) {
       var _this = this;
 
-      var file = e.target.files[0];
-      var reader = new FileReader();
+      /**
+       * display multiple images
+       */
+      var files = e.target.files;
 
-      reader.onload = function (e) {
-        _this.product.image = e.target.result;
-      };
+      for (var i = 0; i < files.length; i++) {
+        var reader = new FileReader();
 
-      reader.readAsDataURL(file);
+        reader.onload = function (e) {
+          // this.images = e.target.result;
+          _this.images.push(e.target.result);
+        };
+
+        reader.readAsDataURL(files[i]);
+      }
     },
     updateProduct: function updateProduct() {
       var formData = new FormData();
       formData.append('name', this.product.name);
       formData.append('description', this.product.description);
       formData.append('category', this.product.category);
-      formData.append('image', document.querySelector('input[type=file]').files[0]);
+      var imgs = document.querySelector('input[type=file]').files.length;
+
+      for (var i = 0; i < imgs; i++) {
+        formData.append('images[]', document.querySelector('input[type=file]').files[i]);
+      }
+
       formData.append('_datetime', this.product._datetime);
       axios.post("/api/products/update/".concat(this.product.id), formData).then(function (response) {
         if (response.data.status == 'success') {
@@ -5769,7 +5776,7 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     validateSecondStep: function validateSecondStep() {
-      if (this.product.image == '') {
+      if (this.images.length <= 0) {
         Swal.fire({
           icon: 'warning',
           title: 'Oops...',
@@ -5795,6 +5802,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+//
+//
+//
+//
+//
 //
 //
 //
@@ -32629,11 +32641,30 @@ var staticRenderFns = [
         }),
         _vm._v(" "),
         _c("div", { staticClass: "navbar-nav" }, [
-          _c("div", { staticClass: "nav-item text-nowrap" }, [
-            _c("a", { staticClass: "nav-link px-3", attrs: { href: "#" } }, [
-              _vm._v("Sign out"),
-            ]),
-          ]),
+          _c(
+            "form",
+            {
+              staticClass: "nav-item text-nowrap",
+              attrs: { action: "/logout", method: "post", id: "logoutform" },
+            },
+            [
+              _c("input", {
+                attrs: { type: "hidden", name: "_token", value: "" },
+              }),
+              _vm._v(" "),
+              _c(
+                "a",
+                {
+                  staticClass: "nav-link px-3",
+                  attrs: {
+                    href: "javascript:{}",
+                    onclick: "document.getElementById('logoutform').submit();",
+                  },
+                },
+                [_vm._v("Sign out")]
+              ),
+            ]
+          ),
         ]),
       ]
     )
@@ -32738,22 +32769,6 @@ var staticRenderFns = [
       },
       [
         _c("div", { staticClass: "position-sticky pt-3" }, [
-          _c("ul", { staticClass: "nav flex-column" }, [
-            _c("li", { staticClass: "nav-item" }, [
-              _c(
-                "a",
-                {
-                  staticClass: "nav-link active",
-                  attrs: { "aria-current": "page", href: "/" },
-                },
-                [
-                  _c("span", { attrs: { "data-feather": "home" } }),
-                  _vm._v("\n            Dashboard\n        "),
-                ]
-              ),
-            ]),
-          ]),
-          _vm._v(" "),
           _c("ul", { staticClass: "nav flex-column mb-2" }, [
             _c("li", { staticClass: "nav-item" }, [
               _c(
@@ -32989,19 +33004,32 @@ var render = function () {
             _vm._v(" "),
             _c("input", {
               staticClass: "form-control-file",
-              attrs: { type: "file", id: "image" },
+              attrs: {
+                type: "file",
+                id: "image",
+                multiple: "",
+                accept: "image/x-png, image/png, image/jpg, image/jpeg",
+              },
               on: { change: _vm.onFileChange },
             }),
           ]),
           _vm._v(" "),
-          _c("div", { staticClass: "form-group" }, [
-            _c("label", { attrs: { for: "image" } }, [_vm._v("Image")]),
-            _vm._v(" "),
-            _c("img", {
-              staticClass: "img-fluid",
-              attrs: { src: _vm.product.image, alt: "" },
-            }),
-          ]),
+          _c(
+            "div",
+            { staticClass: "form-group" },
+            [
+              _c("label", { attrs: { for: "image" } }, [_vm._v("Image")]),
+              _vm._v(" "),
+              _vm._l(_vm.images, function (image) {
+                return _c("img", {
+                  key: image,
+                  staticClass: "img-fluid mt-4",
+                  attrs: { src: image, alt: "" },
+                })
+              }),
+            ],
+            2
+          ),
           _vm._v(" "),
           _c("div", { staticClass: "m-4" }, [
             _c(
@@ -33424,19 +33452,32 @@ var render = function () {
             _vm._v(" "),
             _c("input", {
               staticClass: "form-control-file",
-              attrs: { type: "file", id: "image" },
+              attrs: {
+                type: "file",
+                id: "image",
+                multiple: "",
+                accept: "image/x-png, image/png, image/jpg, image/jpeg",
+              },
               on: { change: _vm.onFileChange },
             }),
           ]),
           _vm._v(" "),
-          _c("div", { staticClass: "form-group" }, [
-            _c("label", { attrs: { for: "image" } }, [_vm._v("Image")]),
-            _vm._v(" "),
-            _c("img", {
-              staticClass: "img-fluid",
-              attrs: { src: _vm.product.image, alt: "" },
-            }),
-          ]),
+          _c(
+            "div",
+            { staticClass: "form-group" },
+            [
+              _c("label", { attrs: { for: "image" } }, [_vm._v("Image")]),
+              _vm._v(" "),
+              _vm._l(_vm.images, function (image) {
+                return _c("img", {
+                  key: image,
+                  staticClass: "img-fluid mt-4",
+                  attrs: { src: image, alt: "" },
+                })
+              }),
+            ],
+            2
+          ),
           _vm._v(" "),
           _c("div", { staticClass: "m-4" }, [
             _c(
@@ -33555,6 +33596,19 @@ var render = function () {
           }),
       _vm._v(" "),
       _c("div", { staticClass: "card-body" }, [
+        _c(
+          "div",
+          { staticClass: "row" },
+          _vm._l(_vm.product.images, function (img) {
+            return _c("div", { key: img.id, staticClass: "col" }, [
+              _c("img", {
+                attrs: { src: img.image, alt: "...", width: "100px" },
+              }),
+            ])
+          }),
+          0
+        ),
+        _vm._v(" "),
         _c("h5", { staticClass: "card-title" }, [
           _vm._v(_vm._s(_vm.shortenDescription(_vm.product.name, 50))),
         ]),
