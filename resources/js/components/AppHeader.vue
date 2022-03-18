@@ -6,9 +6,10 @@
         </button>
         <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search">
         <div class="navbar-nav">
-            <div class="nav-item text-nowrap">
-                <a class="nav-link px-3" href="#">Sign out</a>
-            </div>
+            <form action="/logout" method="post" id="logoutform" class="nav-item text-nowrap">
+                <input type="hidden" name="_token" value="">
+                <a class="nav-link px-3" href="javascript:{}" onclick="document.getElementById('logoutform').submit();">Sign out</a>
+            </form>
         </div>
     </header>
 </template>
