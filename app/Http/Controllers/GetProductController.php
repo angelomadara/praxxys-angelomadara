@@ -31,8 +31,8 @@ class GetProductController extends Controller
                     });
                 }
 
-            return $products->paginate(config('paginate.default'));
+            return $products->latest()->paginate(config('paginate.default'));
         }
-        return Product::all();
+        return Product::latest()->all();
     }
 }

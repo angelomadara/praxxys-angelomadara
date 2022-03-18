@@ -11,26 +11,18 @@
                         <label class="visually-hidden" for="autoSizingSelect">Preference</label>
                         <select class="form-select" id="autoSizingSelect" v-model="selectedCategory" @change="getProducts">
                             <option selected value=""></option>
-                            <option v-for="(category, index) in JSON.parse(categories)" :key="index" :value="category.category">{{ category.category }}</option>
+                            <option v-for="(category, index) in JSON.parse(categories)" :key="index" :value="category.name">{{ category.name }}</option>
                         </select>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="">
+        <div class="container">
             <div class="row row-cols-1 row-cols-md-3 g-4">
-                <div class="col" v-for="product in products.data" :key="product.id">
-                    <div class="card">
-                    <img src="https://t3.ftcdn.net/jpg/02/48/42/64/360_F_248426448_NVKLywWqArG2ADUxDq6QprtIzsF82dMF.jpg" class="card-img-top" alt="...">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ product.name }}</h5>
-                        <p class="card-text">{{ product.description  }}</p>
-                    </div>
-                    </div>
-                </div>
+                <product v-for="product in products.data" :key="product.id" :product="product"/>
             </div>
-            <div class="row">
+            <div class="row mt-4">
                 <pagination align="center" :data="products" @pagination-change-page="getProducts" :limit='10' size="small" :show-disabled="true">
                     <span slot="prev-nav">&lt; Previous</span>
                     <span slot="next-nav">Next &gt;</span>
@@ -42,9 +34,11 @@
 
 <script>
 import pagination from 'laravel-vue-pagination'
+import product from './components/Product.vue'
 export default {
     components : {
-        pagination
+        pagination,
+        product
     },
     props: ['categories'],
     data(){
@@ -67,7 +61,7 @@ export default {
                 .catch(error => {
                     console.log(error);
                 })
-        }
+        },
     }
 }
 </script>

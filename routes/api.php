@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\GetProductController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -22,5 +23,6 @@ use Illuminate\Support\Facades\Route;
 // Route::middleware(['auth'])->group(function () {
     Route::prefix('products')->name('products.')->group(function () {
         Route::get('/all',GetProductController::class)->name('all');
+        Route::post('/store', [ProductController::class,'store'])->name('store');
     });
 // });
