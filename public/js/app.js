@@ -33564,9 +33564,14 @@ var render = function () {
         ]),
         _vm._v(" "),
         _c("p", [
-          _c("a", { attrs: { href: "/products/edit/" + _vm.product.id } }, [
-            _vm._v("Edit"),
-          ]),
+          _c(
+            "a",
+            {
+              staticClass: "btn btn-primary btn-sm",
+              attrs: { href: "/products/edit/" + _vm.product.id },
+            },
+            [_vm._v("Edit")]
+          ),
         ]),
       ]),
     ]),
